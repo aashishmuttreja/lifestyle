@@ -6,8 +6,8 @@
 <script type="text/javascript" src="https://c.oracleinfinity.io/acs/account/htc8hv4be3/js/anz/odc.js"></script>
 
 <<!-- Responsys Web Push -->	
-<script type='text/javascript' id='rsyswpsdk' async src='https://api.pushio.com/webpush/sdk/wpIndex_min.js' wpconfig = '{"appserviceKey":"BEQLoFtTGZ0tlhPv0kguoMWfSUuwGHtJrf0dfzl24VffvnUNC1nZJaHqSKf0j_yyMJcobXsFAvXM0VmelCY5hPE=","apiKey":"ABEjL7oBuw8Fw0-svzbK5DrOs","accountToken":"ABEq_61sebCfTlmtGZ-mOxe88","appver":"0.0.0","apiHost":"https://api.pushio.com","lazy":false}'></script>
-<script src="https://paragon.ga/webpush-service-worker.js">
+<script type='text/javascript' id='rsyswpsdk' async src='https://api.pushio.com/webpush/sdk/wpIndex_min.js' wpconfig = '{"appserviceKey":"BDFqRKB4j8kyg-m2nlCN4wKgDMQ7yvsd_erYDxgHUVYCOF66Eu9lg0ALw-k17GxwAaoaoLGq_RbjarOjTlHgwTI=","apiKey":"ABEvV5bLGNt3Ej8fyEZJJo5h4","accountToken":"ABEq_61sebCfTlmtGZ-mOxe88","appver":"0.0.0","apiHost":"https://api.pushio.com","lazy":false}'></script>
+<script src="/webpush-service-worker.js">
       webPushManagerAPI.register();
     </script>
 
@@ -128,15 +128,14 @@
         localStorage.firstname = ''; // clear it
         localStorage.lastname = ''; // clear it
         localStorage.mobile = ''; // clear it
-		webPushManagerAPI.resetUserId();
-        location.reload();
+		location.reload();
       }
 
       setTimeout(function() {
       	$("#EMAIL_ADDRESS_").val(getEmail());
       	$("#FIRST_NAME").val(localStorage.firstname ? localStorage.firstname : '');
         $("#LAST_NAME").val(localStorage.lastname ? localStorage.lastname : '');
-        $("#MOBILE_PHONE_").val(localStorage.mobile ? localStorage.mobile : '');
+        $("#MOBILE_NUMBER_").val(localStorage.mobile ? localStorage.mobile : '');
       }, 3000);
       
       window.onload = function() {
@@ -147,7 +146,7 @@
           let _email = $("#EMAIL_ADDRESS_").val().trim();
           let _firstName = $("#FIRST_NAME").val().trim();
           let _lastName = $("#LAST_NAME").val().trim();
-          let _mobile = $('#MOBILE_PHONE_').val().trim();
+          let _mobile = $('#MOBILE_NUMBER_').val().trim();
           localStorage.email = _email;
           localStorage.firstname = _firstName;
           localStorage.lastname = _lastName;
