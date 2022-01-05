@@ -51,10 +51,244 @@
     
 <script src="//d2eajpoqaqhimg.cloudfront.net/etc.clientlibs/midea-aem/clientlibs/clientlib-dependencies.js"></script>
 
+<!-- Infinity Sandbox Lib -->
+<script type="text/javascript" src="https://d.oracleinfinity.io/infy/acs/account/8f18b0c3da08493b195f72e2f165b96a/js/ash_new/odc.js"></script>
+
+<!-- Responsys Web Push -->	
+<script type='text/javascript' id='rsyswpsdk' async src='https://api.pushio.com/webpush/sdk/wpIndex_min.js' wpconfig = '{"appserviceKey":"BDFqRKB4j8kyg-m2nlCN4wKgDMQ7yvsd_erYDxgHUVYCOF66Eu9lg0ALw-k17GxwAaoaoLGq_RbjarOjTlHgwTI=","apiKey":"ABEvV5bLGNt3Ej8fyEZJJo5h4","accountToken":"ABEq_61sebCfTlmtGZ-mOxe88","appver":"0.0.0","apiHost":"https://api.pushio.com","lazy":false}'></script>
+<script src="https://oraclecxdemo.ga/webpush-service-worker.js">
+      webPushManagerAPI.register();
+    </script>
+	
+<!-- Additional Script Aashish -->	
+
+<script type="text/javascript">
+      var getEmail = function() {
+        if (localStorage.email) {
+          return localStorage.email;
+        }
+        return 'ANONYMOUS';
+      };
+
+      var getMobile = function() {
+        if (localStorage.mobile) {
+          return localStorage.mobile;
+        }
+        return 'ANONYMOUS';
+      };
+
+      var refresh = function() {
+        localStorage.email = ''; // clear it
+        localStorage.firstname = ''; // clear it
+        localStorage.lastname = ''; // clear it
+        localStorage.mobile = ''; // clear it
+		location.reload();
+      }
+
+      setTimeout(function() {
+      	$("#EMAIL_ADDRESS_").val(getEmail());
+      	$("#FIRST_NAME").val(localStorage.firstname ? localStorage.firstname : '');
+        $("#LAST_NAME").val(localStorage.lastname ? localStorage.lastname : '');
+        $("#MOBILE_NUMBER_").val(localStorage.mobile ? localStorage.mobile : '');
+      }, 3000);
+      
+      window.onload = function() {
+        ShoppingCart.initCart();
+        
+        $('#responsys-form').on('submit', function(e) {
+          // set to localstorage
+          let _email = $("#EMAIL_ADDRESS_").val().trim();
+          let _firstName = $("#FIRST_NAME").val().trim();
+          let _lastName = $("#LAST_NAME").val().trim();
+          let _mobile = $('#MOBILE_NUMBER_').val().trim();
+          localStorage.email = _email;
+          localStorage.firstname = _firstName;
+          localStorage.lastname = _lastName;
+          localStorage.mobile = _mobile;
+		 
+		 webPushManagerAPI.setUserId(getEmail());
+
+          ORA.click({
+            "sendSessionInfo": true,
+            "data": {
+                "ora.z_action": "submitForm",
+                "ora.z_email": getEmail()
+            }
+          });
+        });
+
+        // receive msg frm iframe
+        // have to do it this way because cross domain cannot read content from iframe
+        window.onmessage = function(event) {
+          //Form Submit Success
+          console.log(event.data);
+          if (event.data == 'Form Submit Success') {
+            //disable submit button
+            $('button[type="submit"]').attr('disabled', 'true');
+            //show success
+            $('button[type="submit"]').text('Done');
+          }
+        };
+		
+		    // tag link hovers
+        /*
+        $('a').hover(function() {
+          var text = $(this).text();
+          ORA.click({
+            "sendSessionInfo": true,
+            "data": {
+                "ora.z_action": "linkHover",
+                "link_text": text,
+                "ora.z_email": getEmail()
+            }
+          });
+        });
+        */
+
+        // tag link clicks
+        //$('a').attr('href', '');
+        $('a').click(function() {
+          var text = $(this).text();
+          ORA.click({
+            "sendSessionInfo": true,
+            "data": {
+                "ora.z_action": "linkClick",
+                "link_text": text,
+                "ora.z_email": getEmail()
+            }
+          });
+        });
+
+        // button
+        $('button').off().click(function() {  
+          console.log('btn click')
+          var text = $(this).attr('data-original-title');
+
+          if (!text) {
+            text = $(this).text(); 
+          }
+
+          console.log(text + 'btn click ');
+
+          ORA.click({
+            "sendSessionInfo": true,
+            "data": {
+                "ora.z_action": "btnClick",
+                "link_text": text,
+                "ora.z_email": getEmail()
+            }
+          });
+        });
 
 
+        // override button, simulate abandon
+        $('#cartBtn').off().click(function() {
+          let cart = ShoppingCart.retrieveCart();
+          
+          ORA.click({
+            "sendSessionInfo": true,
+            "data": {
+                "ora.z_action": "abandon",
+                "ora.z_email": getEmail(), 
+                "ora.z_cartTotal": cart.total
+            }
+          });
+        });
+		
+		// override button, Purchase Confirmation
+        $('#purchaseBtn').off().click(function() {
+          let cart = ShoppingCart.retrieveCart();
+          
+          ORA.click({
+            "sendSessionInfo": true,
+            "data": {
+                "ora.z_action": "purchase",
+                "ora.z_email": getEmail(), 
+                "ora.z_cartTotal": cart.total
+            }
+          });
+        });
+        
+        // add to cart
+        $("a.jss244").off().click(function(event) {
+        	event.preventDefault();
+        	// get values
+        	let container = $(this).closest(".product");
+        	let imgUrl = container.find("img.jss245").attr("src");
+        	let prdname = container.find("a.jss246").text();
+        	let prdprice = container.find("div.jss266").text().replace(/,/g, ''); // remove comma
+        	let prdsku = container.attr("id");
 
+        	//prdprice = prdprice.replace('HK$', '').replace(/ /g,'').replace(/\s/g,'');
 
+        	// store values
+        	ShoppingCart.addCart({
+        		"sku": JSON.stringify(prdsku), 
+	            "qty": 1, 
+	            "price": prdprice,
+	            "displayName": prdname,
+	            "displayImg": imgUrl
+        	});
+
+          ORA.click({
+            "sendSessionInfo": true,
+            "data": {
+              "ora.z_action": "addtocart",
+              "ora.z_email": getEmail(), 
+              "ora.z_prd_name0": prdname,
+              "ora.z_prd_img0": imgUrl,
+              "ora.z_prd_price0": prdprice,
+              "ora.z_prd_sku0": prdsku
+            }
+          });
+        });
+        
+        // wishlist
+        $("button.favButtonOnProduct").off().click(function(event) {
+        	event.preventDefault();
+        	event.stopPropagation(); // prevent the a.product-link event triggered so you only have 1 event triggered instead of 2
+
+        	// get values
+        	let container = $(this).closest(".product");
+        	let imgUrl = container.find("img.jss245").attr("src");
+        	let prdname = container.find("a.jss246").text();
+        	let prdprice = container.find("div.jss266").text().replace(/,/g, ''); // remove comma
+        	let prdsku = container.attr("id");
+
+        	//prdprice = prdprice.replace('HK$', '').replace(/ /g,'').replace(/\s/g,'');
+
+        	ORA.click({
+            "sendSessionInfo": true,
+            "data": {
+              "ora.z_action": "wishlist",
+              "ora.z_email": getEmail(), 
+              "ora.z_prd_name0": prdname,
+              "ora.z_prd_img0": imgUrl,
+              "ora.z_prd_price0": prdprice,
+              "ora.z_prd_sku0": prdsku
+            }
+          });
+        });
+        
+        //whatsapp
+        $("#btn_whatsapp").off().click(function(event) {
+        	event.preventDefault();
+        	event.stopPropagation(); // prevent the a.product-link event triggered so you only have 1 event triggered instead of 2
+          
+          ORA.click({
+            "sendSessionInfo": true,
+            "data": {
+              "ora.z_action": "whatsapp",
+              "ora.z_email": getEmail(), 
+              "ora.z_mobile": getMobile()
+            }
+          });
+        });
+        
+      };
+    </script>
+
+<!--<additional script aashish/>-->
 
 <!--<sly data-sly-resource="contexthub"/>-->
 
@@ -117,15 +351,6 @@ var utag_data = {
         }
     });
 </script>
-
-
-    
-
-
-
-
-    
-
 
 
     
@@ -552,6 +777,51 @@ var utag_data = {
 
     
 </div>
+
+This for Rsys form
+
+<div class="row" style="margin-right: inherit; margin-left: inherit;"align="center">
+<h2>Please enter your information:</h2>
+		<div id="top-links" class="nav" align="center">  
+			<div class="wrap form-popup" id="myForm" align="center">
+				<form id="responsys-form" action="https://demo028.rsys5.net/pub/rf" class="form-container" method="POST" target="hidden-form">
+
+				<label for="psw"><b>First Name</b></label>
+				<input type="text" placeholder="Enter First Name" id="FIRST_NAME" name="FIRST_NAME" required="">
+
+				<label for="psw"><b>Last Name</b></label>
+				<input type="text" placeholder="Enter Last Name" id="LAST_NAME" name="LAST_NAME" required="">
+
+				<label for="email"><b>Email</b></label>
+				<input type="text" placeholder="Enter Email" id="EMAIL_ADDRESS_" name="EMAIL_ADDRESS_" required="">
+				
+				<label for="mobile"><b>Mobile</b></label>
+				<input type="text" placeholder="Mobile No. prefix Country Code" id="MOBILE_NUMBER_" name="MOBILE_NUMBER_" required="">
+
+
+		<input type="hidden" name="_ri_" value="X0Gzc2X%3DAQpglLjHJlYQGNtA4gWOwrgJ3tFkmJMHbBCpguCdSU6EP4MDifVwjpnpgHlpgneHmgJoXX0Gzc2X%3DAQpglLjHJlYQGgwySm5cXzgS1KDPI3jbmcLbpguCdSU6EP4MDif">
+	    <input type="hidden" name="_ei_" value="El1mS9zmKkQbhVRTDd6nr50">
+        <input type="hidden" name="_di_" value="v70qt9i3brjllegab0f4rshea39muau2j5lqpke4pfr8jqrqdjm0">
+
+				<button type="submit" class="btn">Submit</button>
+				<button type="button" class="btn cancel" onclick="refresh()">Refresh</button>
+				<!--
+				<button type="button" class="btn btn-inverse btn-block btn-lg dropdown-toggle" onclick="refresh()"><span id="cart-total">Simulate Abandon</span></button>
+				-->
+				</form>
+				<!-- Used for Rsys form submission -->
+				<iframe style="display:none" name="hidden-form" id="hidden-form-iframe"></iframe>
+			</div> <!-- end of wrap -->
+
+			<script>
+			function openForm() {
+			document.getElementById("myForm").style.display = "block";
+			}
+			</script>
+		</div> <!-- end of toplinks -->
+	</div>
+
+This end of rsys form
 <div class="teaser aem-GridColumn aem-GridColumn--default--12">
 
 <div id="teaser-b1b6a5bddc" class="about-list-tap banner-space">
@@ -913,6 +1183,42 @@ var utag_data = {
 
     
 </div>
+  	
+	<div class="col-sm-3">
+        <div id="cart" class="btn-group btn-block" align="center">
+          <button id="cartBtn" type="button" class="btn btn-inverse btn-block btn-lg dropdown-toggle"> 
+            <span id="cart-total">
+              Simulate Abandon
+            </span>
+          </button>
+
+</div>
+<br>
+        <div id="cart" class="btn-group btn-block" align="center">
+          <button id="purchaseBtn" type="button" class="btn btn-inverse btn-block btn-lg dropdown-toggle"> 
+            <span id="cart-total">
+              Purchase Confirmation
+            </span>
+          </button>
+
+</div>
+<br>
+<img src="https://www.tyntec.com/sites/default/files/2020-06/whatsapp_opt-in_customer_journey.png" alt="Girl in a jacket" width="100%" height="100%">
+
+
+<div class="popup" onclick="myFunction()">
+<button id="btn_whatsapp" type="button" style="color:blue;" onclick="alert('Thanks for your Confirmation to get Whatsapp Updates!')">Click Here!</button>
+to sign-up for Whatsapp Notifications, use code "LRWHATSAPP" and Earn Landmark Reward Points!
+  <span class="popuptext" id="myPopup">Thanks for your Confirmation to get Whatsapp Updates!</span>
+</div>
+<br>
+<script>
+// When the user clicks on div, open the popup
+function myFunction() {
+  var popup = document.getElementById("myPopup");
+  popup.classList.toggle("show");
+}
+</script>
 <div class="experiencefragment aem-GridColumn aem-GridColumn--default--12">
 <div id="experiencefragment-11ab99a3c8" class="cmp-experiencefragment cmp-experiencefragment--footer">
 
