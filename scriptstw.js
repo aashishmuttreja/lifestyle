@@ -1,4 +1,4 @@
-function rotateFunction(){
+function myfunction(){
 
 
 	var x = 1024; //min value
