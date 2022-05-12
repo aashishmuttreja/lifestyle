@@ -143,66 +143,7 @@ var getEmail = function() {
           });
         });
 		
-		 // add to cart
-        $("a.jss244").off().click(function(event) {
-        	event.preventDefault();
-        	// get values
-        	let container = $(this).closest(".product");
-        	let imgUrl = container.find("img.styleImagesMain").attr("src");
-        	let prdname = container.find("a.onlyName").text();
-        	let prdprice = container.find("div.pro-price").text().replace(/,/g, ''); // remove comma
-        	let prdsku = container.attr("Brand-name");
-
-        	//prdprice = prdprice.replace('HK$', '').replace(/ /g,'').replace(/\s/g,'');
-
-        	// store values
-        	ShoppingCart.addCart({
-        		"sku": JSON.stringify(prdsku), 
-	            "qty": 1, 
-	            "price": prdprice,
-	            "displayName": prdname,
-	            "displayImg": imgUrl
-        	});
-
-          ORA.click({
-            "sendSessionInfo": true,
-            "data": {
-              "ora.z_action": "addtocart",
-              "ora.z_email": getEmail(), 
-              "ora.z_prd_name0": prdname,
-              "ora.z_prd_img0": imgUrl,
-              "ora.z_prd_price0": prdprice,
-              "ora.z_prd_sku0": prdsku
-            }
-          });
-        });
-        
-        // wishlist
-        $("button.favButtonOnProduct").off().click(function(event) {
-        	event.preventDefault();
-        	event.stopPropagation(); // prevent the a.product-link event triggered so you only have 1 event triggered instead of 2
-
-        	// get values
-        	let container = $(this).closest(".product");
-        	let imgUrl = container.find("img.styleImagesMain").attr("src");
-        	let prdname = container.find("a.onlyName").text();
-        	let prdprice = container.find("div.pro-price").text().replace(/,/g, ''); // remove comma
-        	let prdsku = container.attr("Brand-name");
-
-        	//prdprice = prdprice.replace('HK$', '').replace(/ /g,'').replace(/\s/g,'');
-
-        	ORA.click({
-            "sendSessionInfo": true,
-            "data": {
-              "ora.z_action": "wishlist",
-              "ora.z_email": getEmail(), 
-              "ora.z_prd_name0": prdname,
-              "ora.z_prd_img0": imgUrl,
-              "ora.z_prd_price0": prdprice,
-              "ora.z_prd_sku0": prdsku
-            }
-          });
-        });
+		
         
         //whatsapp
         $("#btn_whatsapp").off().click(function(event) {
