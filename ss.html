@@ -12,19 +12,6 @@
 
 <!-- Infinity script start -->
 <script>
-var getEmail = function() {
-        if (localStorage.email) {
-          return localStorage.email;
-        }
-        return 'ANONYMOUS';
-      };
-
-      var getMobile = function() {
-        if (localStorage.mobile) {
-          return localStorage.mobile;
-        }
-        return 'ANONYMOUS';
-      };
 
       var refresh = function() {
         localStorage.email = ''; // clear it
@@ -67,99 +54,7 @@ var getEmail = function() {
         })
       }
 	  
-	  // receive msg frm iframe
-        // have to do it this way because cross domain cannot read content from iframe
-        window.onmessage = function(event) {
-          //Form Submit Success
-          console.log(event.data);
-          if (event.data == 'Form Submit Success') {
-            //disable submit button
-            $('button[type="submit"]').attr('disabled', 'true');
-            //show success
-            $('button[type="submit"]').text('Done');
-          }
-        };
-		
-		        // tag link clicks
-        //$('a').attr('href', '');
-        $('a').click(function() {
-          var text = $(this).text();
-          ORA.click({
-            "sendSessionInfo": true,
-            "data": {
-                "ora.z_action": "linkClick",
-                "link_text": text,
-                "ora.z_email": getEmail()
-            }
-          });
-        });
-
-        // button
-        $('button').off().click(function() {  
-          console.log('btn click')
-          var text = $(this).attr('data-original-title');
-
-          if (!text) {
-            text = $(this).text(); 
-          }
-
-          console.log(text + 'btn click ');
-
-          ORA.click({
-            "sendSessionInfo": true,
-            "data": {
-                "ora.z_action": "btnClick",
-                "link_text": text,
-                "ora.z_email": getEmail()
-            }
-          });
-        });
-		
-		        // override button, simulate abandon
-        $('#cartBtn').off().click(function() {
-          let cart = ShoppingCart.retrieveCart();
-          
-          ORA.click({
-            "sendSessionInfo": true,
-            "data": {
-                "ora.z_action": "abandon",
-                "ora.z_email": getEmail(), 
-                "ora.z_cartTotal": cart.total
-            }
-          });
-        });
-		
-		// override button, Purchase Confirmation
-        $('#purchaseBtn').off().click(function() {
-          let cart = ShoppingCart.retrieveCart();
-          
-          ORA.click({
-            "sendSessionInfo": true,
-            "data": {
-                "ora.z_action": "purchase",
-                "ora.z_email": getEmail(), 
-                "ora.z_cartTotal": cart.total
-            }
-          });
-        });
-		
-		
-        
-        //whatsapp
-        $("#btn_whatsapp").off().click(function(event) {
-        	event.preventDefault();
-        	event.stopPropagation(); // prevent the a.product-link event triggered so you only have 1 event triggered instead of 2
-          
-          ORA.click({
-            "sendSessionInfo": true,
-            "data": {
-              "ora.z_action": "whatsapp",
-              "ora.z_email": getEmail(), 
-              "ora.z_mobile": getMobile()
-            }
-          });
-        });
-        
+	       
     
 	  </script>
 <!-- Infinity script end -->
